@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link rel="manifest" href="manifest.json">
+
+    <!-- un-comment this code to enable service worker
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(() => console.log('service worker installed'))
+          .catch(err => console.log('Error', err));
+      }
+    </script>-->
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet"/>
+    <link href="css/style.css" rel="stylesheet"/>
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- Google Feed API -->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+    <!-- Bower -->
+    <script src="lib/moment/moment.js"></script>
+    <script src="lib/moment/locale/vi.js"></script>
+    <script src="lib/angular-moment/angular-moment.js"></script>
+    <script src="lib/jquery-1.11.1/dist/jquery.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/bundle.min.js"></script>
+
+  </head>
+
+  <body ng-app="vcuApp" ng-strict-di>
+     <ion-nav-view animation="slide-right-left"></ion-nav-view>
+     <script type='text/ng-template' id='article.template.html'>
+<ion-view title="Article">
+  <ion-pane id="article" ng-controller="ArticleController">
+    <ion-header-bar align-title="center" class="bar bar-header bar-assertive">
+      <button class="button button-icon icon ion-ios-arrow-back" ng-click="backHome()"></button>
+      <div class="h1 title">VCU News</div>
+      <button class="button button-icon icon ion-share"></button>
+    </ion-header-bar>
+
+
+    <ion-content scroll="true">
+      <div class="list card">
+        <div class="item item-avatar">
+          <img src="img/cover.png">
+          <h2>{{feed.author}}</h2>
+          <p am-time-ago="feed.publishedDate"></p>
+        </div>
+
+        <div class="item item-body">
+          <p ng-bind-html="feed.content"></p>
+          <p>
+            <a href="#" class="subdued">1 Like</a>
+            <a href="#" class="subdued">5 Comments</a>
+          </p>
+        </div>
+      </div>
+    </ion-content>
+  </ion-pane>
+</ion-view>
+</script>
+<script type='text/ng-template' id='battery.template.html'>
+<ion-view view-title="Battery" name="battery-view">
+  <ion-pane id="article" ng-controller="ArticleController">
+    <ion-header-bar align-title="center" class="bar bar-header bar-assertive">
+      <button class="button button-icon icon ion-ios-arrow-back" ng-click="backHome()"></button>
+      <div class="h1 title">VCU News</div>
+      <button class="button button-icon icon ion-share"></button>
+    </ion-header-bar>
+
+    <ion-content class="padding">
+        Is plugged: {{isPlugged}}
+      </br>
+        Battery Level: {{batteryLevel}}
+    </ion-content>
+  </ion-pane>
+</ion-view>
+</script>
+<script type='text/ng-template' id='home.template.html'>
+<ion-view title="Home">
+  <ion-pane ng-controller="HomeController">
+    <ion-header-bar align-title="center" class="bar bar-header bar-assertive">
+      <button class="button button-icon icon ion-navicon" ng-click="toggleLeftMenu()"></button>
+      <div class="h1 title">VCU News</div>
+      <button class="button button-icon icon ion-ios-people"></button>
+    </ion-header-bar>
+    <ion-content></ion-content>
+
+    <ion-side-menus>
+      <!-- Left menu -->
+      <ion-side-menu side="left">
+        <ion-header-bar class="bar-stable">
+          <h1 class="title">Left</h1>
+        </ion-header-bar>
+        <ion-content class="custom">
+          <ion-list>
+            <ion-item menu-close ng-click="login()">
+              Login
+            </ion-item>
+            <ion-item menu-close ng-click="battery()">
+              Battery
+            </ion-item>
+            <ion-item menu-close>
+              Browse
+            </ion-item>
+            <ion-item menu-close>
+              Learn
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ion-side-menu>
+
+      <ion-side-menu-content>
+        <!-- Main content, usually <ion-nav-view> -->
+        <ion-content scroll="true">
+          <ion-list class="list card">
+            <div class="vcu-list-card-item" ng-repeat="feed in feeds track by $index" ng-click="viewArticle(feed)">
+              <div class="item item-avatar">
+                <img src="img/cover.png">
+                <h2>{{feed.author}}</h2>
+                <p am-time-ago="feed.publishedDate"></p>
+              </div>
+              <div class="item item-body">
+                <img ng-if="!!feed.imageSrc" ng-src="{{feed.imageSrc}}" alt="" width="100%" />
+                <p ng-bind-html="feed.contentSnippet"></p>
+              </div>
+            </div>
+
+          </ion-list>
+
+          <ion-infinite-scroll ng-if="moreDataCanBeLoaded" on-infinite="loadMore()" distance="1%">
+          </ion-infinite-scroll>
+        </ion-content>
+      </ion-side-menu-content>
+
+    </ion-side-menus>
+
+  </ion-pane>
+
+</ion-view>
+</script>
+<script type='text/ng-template' id='login.template.html'>
+<ion-view view-title="Login" name="login-view">
+  <ion-pane id="article" ng-controller="ArticleController">
+    <ion-header-bar align-title="center" class="bar bar-header bar-assertive">
+      <button class="button button-icon icon ion-ios-arrow-back" ng-click="backHome()"></button>
+      <div class="h1 title">VCU News</div>
+      <button class="button button-icon icon ion-share"></button>
+    </ion-header-bar>
+
+<ion-content class="padding">
+    <div class="list list-inset">
+        <label class="item item-input">
+            <input type="text" placeholder="Username" ng-model="data.username">
+        </label>
+        <label class="item item-input">
+            <input type="password" placeholder="Password" ng-model="data.password">
+        </label>
+    </div>
+    <button class="button button-block button-assertive" ng-click="login()">Login</button>
+</ion-content>
+</ion-pane>
+</ion-view>
+</script>
+
+  </body>
+
+</html>

@@ -1,0 +1,15 @@
+<ion-view view-title="Battery" name="battery-view">
+  <ion-pane id="article" ng-controller="ArticleController">
+    <ion-header-bar align-title="center" class="bar bar-header bar-assertive">
+      <button class="button button-icon icon ion-ios-arrow-back" ng-click="backHome()"></button>
+      <div class="h1 title">VCU News</div>
+      <button class="button button-icon icon ion-share"></button>
+    </ion-header-bar>
+
+    <ion-content class="padding">
+        Is plugged: {{isPlugged}}
+      </br>
+        Battery Level: {{batteryLevel}}
+    </ion-content>
+  </ion-pane>
+</ion-view>

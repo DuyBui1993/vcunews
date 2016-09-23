@@ -1,0 +1,28 @@
+<ion-view title="Article">
+  <ion-pane id="article" ng-controller="ArticleController">
+    <ion-header-bar align-title="center" class="bar bar-header bar-assertive">
+      <button class="button button-icon icon ion-ios-arrow-back" ng-click="backHome()"></button>
+      <div class="h1 title">VCU News</div>
+      <button class="button button-icon icon ion-share"></button>
+    </ion-header-bar>
+
+
+    <ion-content scroll="true">
+      <div class="list card">
+        <div class="item item-avatar">
+          <img src="img/cover.png">
+          <h2>{{feed.author}}</h2>
+          <p am-time-ago="feed.publishedDate"></p>
+        </div>
+
+        <div class="item item-body">
+          <p ng-bind-html="feed.content"></p>
+          <p>
+            <a href="#" class="subdued">1 Like</a>
+            <a href="#" class="subdued">5 Comments</a>
+          </p>
+        </div>
+      </div>
+    </ion-content>
+  </ion-pane>
+</ion-view>
